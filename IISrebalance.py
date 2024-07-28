@@ -19,4 +19,4 @@ p.display()
 
 r2 = p.rebalance2()
 display(r2)
-print(r2['change_value'].sum())
+print(r2['chgValue'].sum())
