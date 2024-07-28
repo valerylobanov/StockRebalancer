@@ -1,4 +1,8 @@
-ticker,quantity,price,lot_qty
-LKOH,1, 6908, 1
-SBER,2, 292.21, 10
-GAZP,5, 119.65, 10
+ticker,qty,price,lot_qty
+LKOH,7, 6913, 1
+NVTK,11,1085,1
+GMKN,110,128.6,10
+SBER,130, 131.03, 10
+TATN,31,662.7, 1
+TCSG,1,2951, 1
+GAZP,50, 119.65, 10
