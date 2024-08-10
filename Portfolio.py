@@ -3,6 +3,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 from IPython.display import display
+import StockData as sd
 
 # TODO load quotes from moex
 
@@ -16,10 +17,22 @@ class Portfolio:
         self.assets = dfTarget.rename(columns={"percent": "tgtPercent"})
         self.assets['tgtPercent'] = self.assets['tgtPercent']/100
     
-    # dfCurrent = {ticker: string,index; quantity: int, price: float}
+    # dfCurrent = {ticker: string,index; quantity: int}
     def setCurrent(self,dfCurrent,cash):
         self.assets = self.assets.join(dfCurrent)
         self.cash = cash
+
+        # get current quotes
+        moex = sd.Moex()
+        self.assets = self.assets.join(moex.quotes)
+        print('hello')
+        
+        # TODO: apply stocks.getPrice, getLotSize
+
+        # self.assets['lot_qty'] = 0
+        # self.assets['lot_qty'] = self.assets['lot_qty'].apply(lambda x: x+1)
+        # display(self.assets)
+        
         self.assets['percent'] = self.assets['price']*self.assets['qty'] / self.__getTotal()
            
     def __getTotal(self):
