@@ -14,6 +14,7 @@ currentQty = pd.read_csv('current.csv',\
                     )
 
 p = pf.Portfolio(tgtPercentage)
+p.setTarget()
 p.setCurrent(currentQty,600000)
 p.display()
 

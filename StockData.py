@@ -1,5 +1,5 @@
 import requests
-import xmltodict
+# import xmltodict
 import json
 import os
 import time
@@ -20,7 +20,7 @@ class Moex:
         self.quotes = pd.read_csv(fname)
         self.quotes = self.quotes.rename(columns={\
             'SECID':'ticker',\
-            'LOTSIZE':'lot_qty',\
+            'LOTSIZE':'lotSize',\
             'PREVPRICE':'price',\
             'PREVDATE':'date',\
             'LATNAME':'name'})
