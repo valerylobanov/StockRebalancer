@@ -103,3 +103,11 @@ class Portfolio:
         # drop change collumns to enable future rebalances
         self.current = self.current.drop('chgQty',axis=1)
         self.current = self.current.drop('chgValue',axis=1)
+
+    def getStd(self):
+        """ std deviation as rebalance quality criteria """
+        df = self.target.join(self.current,lsuffix='Tgt')
+        ttl = self.__getTotal()
+        df['valueTgt'] = df['percentTgt']*ttl
+        df['delta'] = df['value'] - df['valueTgt']
+        return np.std(df['delta'])
