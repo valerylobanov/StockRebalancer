@@ -15,7 +15,7 @@ class Moex:
     def __init__(self):
         # need to update only onece a day
         timestr = time.strftime("%Y%m%d")
-        fname = f'StockData{timestr}.csv'
+        fname = f'StockData/StockData{timestr}.csv'
         self.__fetchMoexToFile(fname)
         self.quotes = pd.read_csv(fname)
         self.quotes = self.quotes.rename(columns={\
