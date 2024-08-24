@@ -3,9 +3,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 from IPython.display import display
-import StockData as sd
-
-# TODO load quotes from moex
+import Moex as mx
 
 '''
 tgt - target
@@ -38,11 +36,11 @@ class Portfolio:
         self.cash = cash
 
         # get current quotes
-        moex = sd.Moex()
+        moex = mx.Moex()
         # moex.quotes.to_csv('moex_quotes.csv')
         self.current = self.current.join(moex.quotes,how='outer')
         self.current.fillna(value=0,inplace=True)
-        self.current.to_csv('self_current.csv')
+        #self.current.to_csv('self_current.csv')
         self.current['percent'] = self.current['price']*self.current['qty'] / self.__getTotal()
 
         self.current['value']=self.current['price']*self.current['qty']
@@ -105,10 +103,10 @@ class Portfolio:
 
     # can buy whole lot and it's value is above tolerance
     @staticmethod
-    def findNonZeroLots(x,totalPortfolio, tolerance=0):
+    def findNonZeroLots(x,totalPortfolio, tolerance=10000):
         x['valueTgt'] = x['percentTgt'] * totalPortfolio
         x['lotQtyTgt'] = (x['valueTgt'] / x['price']/x['lotSize']).apply(np.round) 
-        x.to_csv('x.csv')
+        # x.to_csv('x.csv')
         return x.loc[ (x['lotQtyTgt']>0) & (x['valueTgt'] > tolerance) ]
 
     def applyChanges(self,dfChanges):
