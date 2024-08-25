@@ -161,4 +161,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 combine.py
-.jupyter/desktop-workspaces/default-37a8.jupyterlab-workspace
+.jupyter/
+ImoexData
+StockData
+.vscode
