@@ -10,7 +10,7 @@ currentQty = pd.read_csv('current.csv',\
                 dtype={'ticker': np.str_, 'qty': np.int_},\
                 index_col='ticker'
                     )
-cash = 220000+7000+532000
+cash = 227000
 
 # what we want
 imoex = im.Imoex()
@@ -24,7 +24,7 @@ c1 = p.getCashValue()
 a1 = p.getStocksValue()
 
 # rebalance
-c = p.rebalance2()
+c = p.rebalance(10000)
 p.applyChanges(c)
 c2 = p.getCashValue()
 a2 = p.getStocksValue()
