@@ -61,12 +61,35 @@ class Portfolio:
     def __getTotal(self):
         return (self.current['qty']*self.current['price']).sum() + self.cash 
 
-    def rebalance(self):
+
+
+    # def rebalance2(self):
+    #     df = self.target.join(self.current,lsuffix='Tgt')
+
+    #     totalPortfolio = self.__getTotal()
+    #     x = Portfolio.findNonZeroLots(df,totalPortfolio)
+    #     x['percentTgt'] = x['percentTgt'] / x['percentTgt'].sum()
+
+    #     # target value
+    #     x['valueTgt'] = x['percentTgt'] * totalPortfolio
+    #     x['lotQtyTgt'] = (x['valueTgt'] / x['price']/x['lotSize']).apply(np.round) 
+    #     x['qtyTgt'] = x['lotQtyTgt'] * x['lotSize']
+        
+    #     # change = to be - as is
+    #     x['chgQty'] = x['qtyTgt'] - x['qty']
+    #     x['chgValue'] = x['chgQty']*x['price']
+
+    #     # only columns and rows needed for future processing
+    #     r = pd.DataFrame(x[['chgQty','chgValue']].dropna())
+        
+    #     return r.sort_values(by=['chgValue'],ascending=False)
+
+    def rebalance(self,tolerance=10000):
+
         df = self.target.join(self.current,lsuffix='Tgt')
 
         totalPortfolio = self.__getTotal()
-        x = self.findNonZeroLots(df,totalPortfolio)
-        x['percentTgt'] = x['percentTgt'] / x['percentTgt'].sum()
+        x = Portfolio.findNonZeroLots(df,totalPortfolio,tolerance)
 
         # target value
         x['valueTgt'] = x['percentTgt'] * totalPortfolio
