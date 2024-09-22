@@ -10,24 +10,24 @@ currentQty = pd.read_csv('current.csv',\
                 dtype={'ticker': np.str_, 'qty': np.int_},\
                 index_col='ticker'
                     )
-cash = 227000
+cash = 26800
 
 # what we want
 imoex = im.Imoex()
 tgtPercentage = imoex.getIndex()
 
 # setup portfolio
-p = pf.Portfolio(tolerance=1000)
+p = pf.Portfolio(tolerance=0)
 p.setTarget(tgtPercentage)
 p.setCurrent(currentQty,cash)
 c1 = p.getCashValue()
 a1 = p.getStocksValue()
 
-print('std before')
-print(p.getStd(verbouse=True))
+# print('std before')
+# print(p.getStd(verbouse=False))
 
 # rebalance
-c = p.rebalance(10000)
+c = p.rebalance()
 p.applyChanges(c)
 c2 = p.getCashValue()
 a2 = p.getStocksValue()
@@ -37,4 +37,4 @@ print(f'before cash {c1:,.0f} stocks {a1:,.0f} total {(a1+c1):,.0f}')
 print(f'after cash {c2:,.0f} stocks {a2:,.0f} total {(a2+c2):,.0f}')
 display(c)
 print(len(c.index))
-p.getStd(verbouse=True)
+# p.getStd(verbouse=True)

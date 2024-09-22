@@ -10,11 +10,11 @@ class Moex:
     # ticker, lot_aty, price, date, name
     quotes = pd.DataFrame()
 
-    def __init__(self):
+    def __init__(self,forceFetch = False):
         # need to update only onece a day
         timestr = time.strftime("%Y%m%d")
         fname = f'StockData/StockData{timestr}.csv'
-        self.__fetchMoexToFile(fname)
+        self.__fetchMoexToFile(fname,forceFetch)
         self.quotes = pd.read_csv(fname)
         self.quotes = self.quotes.rename(columns={\
             'SECID':'ticker',\
@@ -29,8 +29,8 @@ class Moex:
                                                 'REGNUMBER','PREVLEGALCLOSEPRICE','CURRENCYID','SECTYPE','LISTLEVEL','SETTLEDATE'])
 
     # get stocks quotes T-1 using MOEX API
-    def __fetchMoexToFile(self, fname):
-        if not(os.path.exists(fname)):
+    def __fetchMoexToFile(self, fname,forceFetch=False):
+        if not(os.path.exists(fname)) or forceFetch:
             url = 'https://iss.moex.com/iss/engines/stock/markets/shares/securities.xml?index=IMOEX&marketprice_board=1'
             response = requests.get(url)
             df = pd.read_xml(response.text,xpath='//data[@id="securities"]/rows/row').set_index('SECID')

@@ -48,6 +48,9 @@ class Imoex:
 
             index = index.dropna()
 
+            excluded = pd.read_csv('exclude.csv',index_col=0)
+            index = index.drop(excluded.index,errors='ignore')
+
             index.to_csv(fname,index_label='ticker')
 
         # display(df)
