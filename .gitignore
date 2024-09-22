@@ -165,3 +165,4 @@ combine.py
 ImoexData/Imoex*.csv
 StockData/Stock*.csv
 .vscode
+.DS_Store

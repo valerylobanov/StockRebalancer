@@ -29,25 +29,19 @@ class Portfolio:
     def getTarget(self):
         return self.target
     
-    def setCurrent(self,quantities,cash):
-        """
-        set current qty of stocks in Portfolio\n
-        - quantities {ticker: string,index; qty: int} - quantities\n
-        - cash
-        """
-        self.current = quantities
-        self.cash = cash
+    def setCurrent(self,path):
+        self.current = pd.read_csv(path,index_col='ticker')
+        self.cash = self.current.loc['@RUB','qty']
+        self.current.drop('@RUB')
 
         # get current quotes
         moex = mx.Moex()
-        # moex.quotes.to_csv('moex_quotes.csv')
         self.current = self.current.join(moex.quotes,how='outer')
         self.current.fillna(value=0,inplace=True)
-        #self.current.to_csv('self_current.csv')
         self.current['percent'] = self.current['price']*self.current['qty'] / self.__getTotal()
 
         self.current['value']=self.current['price']*self.current['qty']
-    
+  
     def getCurrent(self):
         return self.current
 
@@ -78,20 +72,11 @@ class Portfolio:
 
         x = x.drop(x[x.chgValue <= 0].index)
 
-        # drop smallest value until sum is positive
-        # while x['chgValue'].sum() > 0:
-        #     x = x.drop(x[x.chgValue == x['chgValue'].min() ].index)
-
-        # display(x [x.chgValue == x['chgValue'].min()].index )
-
-        while x['chgValue'].sum() > self.cash:
-            x = x.drop(x [x.chgValue == x['chgValue'].min()].index ) 
+        # while x['chgValue'].sum() > self.cash:
+        #     x = x.drop(x [x.chgValue == x['chgValue'].min()].index ) 
   
-
         # only columns and rows needed for future processing
         r = pd.DataFrame(x[['chgQty','chgValue']].dropna())
-
-        # display(r)
         
         return r.sort_values(by=['chgValue'],ascending=False)
 
@@ -124,7 +109,7 @@ class Portfolio:
         
         x = dfCurrent.join(dfChanges,how='left')
         x = x.fillna(0)
-        display(x)
+        # display(x)
         x['qty'] = x['qty'] + x['chgQty']
         x['value'] = x['value'] + x['chgValue']
 
