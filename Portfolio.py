@@ -30,7 +30,11 @@ class Portfolio:
         return self.target
     
     def setCurrent(self,path):
-        self.current = pd.read_csv(path,index_col='ticker')
+        
+        df = pd.read_csv(path,index_col='ticker')
+        df['qty']=df.sum(axis=1)
+        self.current=df[['qty']]
+
         self.cash = self.current.loc['@RUB','qty']
         self.current.drop('@RUB')
 
@@ -56,36 +60,52 @@ class Portfolio:
 
     def rebalance(self):
 
+        # combine all data together
         df = self.target.join(self.current,lsuffix='Tgt')
 
         totalPortfolio = self.__getTotal()
         x = self.findNonZeroLots(df,totalPortfolio)
 
+        x['percentTgt'] = x['percentTgt'] / x['percentTgt'].sum()
+
         # target value
-        x['valueTgt'] = x['percentTgt'] * totalPortfolio
-        x['lotQtyTgt'] = (x['valueTgt'] / x['price']/x['lotSize']).apply(np.floor) 
+        x['valueTgt'] = x['percentTgt'] * self.cash
+        print('sum valueTgt')
+        print(x['valueTgt'].sum())
+
+        x['lotQtyTgt'] = x['valueTgt'] / (x['price'] * x['lotSize']) 
+        #.apply(np.floor) 
         x['qtyTgt'] = x['lotQtyTgt'] * x['lotSize']
+
+        print('sum valueTgt2')
+        x['valueTgt2'] = x['qtyTgt']*x['price']
+        print(x['valueTgt2'].sum())
         
         # change = to be - as is
-        x['chgQty'] = x['qtyTgt'] - x['qty']
+
+        x['chgQty'] = x['qtyTgt'] - x['qty'] 
         x['chgValue'] = x['chgQty']*x['price']
 
-        x = x.drop(x[x.chgValue <= 0].index)
+        print('sum chg val')
+        print(x['chgValue'].sum())
+
+        # x = x.drop(x[x.chgValue <= 0].index)
 
         # while x['chgValue'].sum() > self.cash:
         #     x = x.drop(x [x.chgValue == x['chgValue'].min()].index ) 
   
         # only columns and rows needed for future processing
-        r = pd.DataFrame(x[['chgQty','chgValue']].dropna())
-        
+        # display(x)
+        r = pd.DataFrame(x[['nameTgt','chgQty','chgValue']].dropna())
+        # r = pd.DataFrame(x[['nameTgt','chgQty','qty','qtyTgt','chgValue']].dropna())
         return r.sort_values(by=['chgValue'],ascending=False)
 
     # can buy whole lot and it's value is above tolerance
     def findNonZeroLots(self,x,totalPortfolio):
+
         x['valueTgt'] = x['percentTgt'] * totalPortfolio
-        x['lotQtyTgt'] = (x['valueTgt'] / x['price']/x['lotSize']).apply(np.floor) 
-        # x.to_csv('x.csv')
-        return x.loc[ (x['lotQtyTgt']>0) & (x['valueTgt'] > self.tolerance) ]
+        x['lotQtyTgt'] = (x['valueTgt'] / (x['price']*x['lotSize']) ).apply(np.floor) 
+        return x.loc[ (x['lotQtyTgt']>0) & ( (x['valueTgt'] -x['value'])> self.tolerance) ]
 
     def applyChanges(self,dfChanges):
         """
@@ -114,7 +134,6 @@ class Portfolio:
         x['value'] = x['value'] + x['chgValue']
 
         return x
-
 
     def getStd(self,verbouse = False):
         """ std deviation as rebalance quality criteria """
